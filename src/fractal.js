@@ -1,8 +1,9 @@
 define(function () {
     var pixelWidth;
     var pixelHeight;
+    var viewport;
 
-    var model = [];
+    var model;
 
     function complexMagnitude(z) {
         return Math.sqrt(z.re * z.re + z.im * z.im);
@@ -10,10 +11,12 @@ define(function () {
 
     var fractal = {
         threshold: 2,
-        init: function (width, height) {
+        init: function (width, height, requestedViewport) {
             pixelWidth = width;
             pixelHeight = height;
+            viewport = requestedViewport;
 
+            model = [];
             for (var x = 0; x < pixelWidth; x++) {
                 var row = [];
                 for (var y = 0; y < pixelHeight; y++) {
@@ -53,8 +56,8 @@ define(function () {
 
     function pixelToPlane(x, y) {
         return {
-            x: (x / pixelWidth * 4 - 2),
-            y: (y / pixelHeight * 2 - 1)
+            x: ((x / pixelWidth * 4 - 2) + viewport.x) / viewport.zoom,
+            y: ((y / pixelHeight * 2 - 1) + viewport.y) / viewport.zoom
         };
     }
 

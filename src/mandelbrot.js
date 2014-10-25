@@ -5,7 +5,11 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
     var profileStartTime;
 
     var MAX_STEP = 30;
-    var SCALING = 8;
+    var SCALE = 2;
+
+    var x;
+    var y;
+    var zoom;
 
     function loop() {
         requestAnimationFrame(function () {
@@ -19,10 +23,24 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
         });
     }
 
-    function init() {
+    function init(element) {
+        canvas = element.querySelector('canvas');
+        canvas.width = element.getAttribute('width');
+        canvas.height = element.getAttribute('height');
+
+        graphics = canvas.getContext('2d');
+
+        profile_start();
+
         step = 0;
-        graphics.scale(SCALING, SCALING);
-        fractal.init(canvas.width / SCALING, canvas.height / SCALING);
+        graphics.scale(SCALE, SCALE);
+        fractal.init(canvas.width / SCALE, canvas.height / SCALE, {
+            x: element.getAttribute('x') || 0,
+            y: element.getAttribute('y') || 0,
+            zoom: element.getAttribute('zoom') || 1
+        });
+
+        loop();
     }
 
     function profile_start() {
@@ -52,15 +70,34 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
             element.innerHTML = '<canvas></canvas>';
         },
         created: function (element) {
-            canvas = element.querySelector('canvas');
-            canvas.width = element.getAttribute('width');
-            canvas.height = element.getAttribute('height');
-
-            graphics = canvas.getContext('2d');
-
-            profile_start();
-            init();
-            loop();
+            init(element);
+        },
+        attributes: {
+            width: {
+                updated: function (element) {
+                    init(element);
+                }
+            },
+            height: {
+                updated: function (element) {
+                    init(element);
+                }
+            },
+            x: {
+                updated: function (element) {
+                    init(element);
+                }
+            },
+            y: {
+                updated: function (element) {
+                    init(element);
+                }
+            },
+            zoom: {
+                updated: function (element) {
+                    init(element);
+                }
+            }
         }
     });
 });
