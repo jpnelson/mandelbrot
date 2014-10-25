@@ -1,9 +1,11 @@
 define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (skate, fractal, spectrum) {
     var canvas;
     var graphics;
-    var step = 0;
-    var MAX_STEP = 30;
+    var step;
     var profileStartTime;
+
+    var MAX_STEP = 30;
+    var SCALING = 8;
 
     function loop() {
         requestAnimationFrame(function () {
@@ -15,6 +17,12 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
                 profile_stop();
             }
         });
+    }
+
+    function init() {
+        step = 0;
+        graphics.scale(SCALING, SCALING);
+        fractal.init(canvas.width / SCALING, canvas.height / SCALING);
     }
 
     function profile_start() {
@@ -50,8 +58,8 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
 
             graphics = canvas.getContext('2d');
 
-            fractal.init(canvas.width, canvas.height);
             profile_start();
+            init();
             loop();
         }
     });
