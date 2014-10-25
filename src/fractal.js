@@ -4,14 +4,8 @@ define(function () {
 
     var model = [];
 
-    function complexMagnitude(a) {
-        //http://www.dspguru.com/dsp/tricks/magnitude-estimator
-        var ALPHA = 0.947543636291;
-        var BETA = 0.392485425092;
-        var absI = Math.abs(a.re);
-        var absQ = Math.abs(a.im);
-        ALPHA * Math.max(absI, absQ) + BETA * Math.min(absI, absQ);
-        return Math.sqrt(a.re * a.re + a.im * a.im);
+    function complexMagnitude(z) {
+        return Math.sqrt(z.re * z.re + z.im * z.im);
     }
 
     var fractal = {
