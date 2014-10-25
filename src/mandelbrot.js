@@ -1,46 +1,42 @@
-define(['../bower_components/skatejs/dist/skate.js', './fractal', './spectrum'], function (skate, fractal, spectrum) {
+define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (skate, fractal, spectrum) {
     var canvas;
     var graphics;
     var step = 0;
-    var MAX_STEP = 9;
+    var MAX_STEP = 30;
+    var profileStartTime;
 
     function loop() {
         requestAnimationFrame(function () {
             iterateMandelbrotSet();
-            requestAnimationFrame(function () {
-                    if (step < MAX_STEP) {
-                        loop();
-                        step++;
-                    }
-
-                });
+            if (step < MAX_STEP) {
+                loop();
+                step++;
+            } else {
+                profile_stop();
+            }
         });
     }
 
+    function profile_start() {
+        profileStartTime = Date.now()
+    }
+
+    function profile_stop() {
+        document.getElementById('profile').innerHTML = (Date.now() - profileStartTime) / 1000 + ' seconds';
+    }
+
     function iterateMandelbrotSet() {
-        fractal.iterate();
-
-        var magnitudes = fractal.magnitudes();
-        for (var x = 0; x < magnitudes.length; x++) {
-            for (var y = 0; y < magnitudes[x].length; y++) {
-                var escaped = magnitudes[x][y] > 2;
-                if (!escaped) {
-                    drawPixel(x, y, spectrum(step / MAX_STEP));
-                }
-
+        fractal.iterate(function(x, y, magnitude) {
+            var escaped = magnitude > fractal.threshold;
+            if (!escaped) {
+                drawSquare(x, y);
             }
-        }
+        });
     }
 
-    function drawPixel(x, y, color) {
-        drawSquare(x, y, 1, color);
-    }
-
-
-
-    function drawSquare(x, y, size, color) {
-        graphics.fillStyle = "rgba("+color.r+","+color.g+","+color.b+","+(color.a/255)+")";
-        graphics.fillRect(x, y, size, size);
+    function drawSquare(x, y, color) {
+        graphics.fillStyle = "rgba(0,0,0,"+(1 / MAX_STEP)+")";
+        graphics.fillRect(x, y, 1, 1);
     }
 
     skate('mandelbrot', {
@@ -55,6 +51,7 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal', './spectrum'],
             graphics = canvas.getContext('2d');
 
             fractal.init(canvas.width, canvas.height);
+            profile_start();
             loop();
         }
     });

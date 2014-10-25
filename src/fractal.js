@@ -1,10 +1,15 @@
-define(['./complex'], function (complex) {
+define(function () {
     var pixelWidth;
     var pixelHeight;
 
     var model = [];
 
+    function complexMagnitude(z) {
+        return Math.sqrt(z.re * z.re + z.im * z.im);
+    }
+
     var fractal = {
+        threshold: 2,
         init: function (width, height) {
             pixelWidth = width;
             pixelHeight = height;
@@ -12,15 +17,22 @@ define(['./complex'], function (complex) {
             for (var x = 0; x < pixelWidth; x++) {
                 var row = [];
                 for (var y = 0; y < pixelHeight; y++) {
-                    row.push(complex(0, 0));
+                    row.push({
+                        re: 0,
+                        im: 0
+                    });
                 }
                 model[x] = row;
             }
         },
-        iterate: function() {
+        iterate: function(callback) {
             for (var x = 0; x < pixelWidth; x++) {
                 for (var y = 0; y < pixelHeight; y++) {
-                    model[x][y] = step(x, y);
+                    var magnitude = complexMagnitude(model[x][y]);
+                    if (magnitude <= this.threshold) {
+                        model[x][y] = step(x, y);
+                        callback(x, y, magnitude);
+                    }
                 }
             }
         },
@@ -29,7 +41,7 @@ define(['./complex'], function (complex) {
             for (var x = 0; x < pixelWidth; x++) {
                 var row = [];
                 for (var y = 0; y < pixelHeight; y++) {
-                    row.push(model[x][y].magnitude());
+                    row.push(complexMagnitude(model[x][y]));
                 }
                 magnitudes.push(row);
             }
@@ -40,13 +52,18 @@ define(['./complex'], function (complex) {
 
     function step(x, y) {
         var plane = pixelToPlane(x, y);
-        var c = complex(plane.x, plane.y);
+        var c = {
+            re: plane.x,
+            im: plane.y
+        };
         var z = model[x][y];
-        return z.squared().plus(c);
+        return {
+            re: z.re * z.re - z.im * z.im + c.re,
+            im: 2* z.re * z.im + c.im
+        };
     }
 
     function pixelToPlane(x, y) {
-        var pixelToPlaneRatio = 1 / pixelHeight; //plane = pixels * pixelToPlaneRation
         return {
             x: (x / pixelWidth * 4 - 2),
             y: (y / pixelHeight * 2 - 1)
