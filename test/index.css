@@ -1,3 +1,7 @@
+#mandelbrot-container {
+    width: 100%;
+    text-align:center;
+}
 mandelbrot {
     display: inline-block;
 }

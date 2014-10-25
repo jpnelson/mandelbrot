@@ -4,28 +4,56 @@
 </head>
 
 <body>
+    <div id="mandelbrot-container">
+        <mandelbrot width="600" height="400" zoom="1" scale="2"></mandelbrot>
+        <canvas id="splits" width="600" height="400"></canvas>
+        <p>
+            Total time: <span id="profile"></span>
+        </p>
+    </div>
 
-<mandelbrot width="600" height="400" zoom="2" scale="2"></mandelbrot>
 
-<script src="../node_modules/requirejs/require.js"></script>
-<script>
-    document.querySelector('mandelbrot').onSplit = function(splitTime) {
-        var li = document.createElement('li');
-        li.innerHTML = splitTime;
-        document.getElementById('splits').appendChild(li);
-    };
 
-    document.querySelector('mandelbrot').onDone = function(profiler) {
-        document.getElementById('profile').innerHTML = profiler.print();
-    };
-    require(['../src/mandelbrot']);
-</script>
+    <script src="../node_modules/requirejs/require.js"></script>
+    <script>
+        var i = 0;
 
-<ul id="splits">
+        //Charting
+        require(['../bower_components/chartjs/Chart.js'], function () {
+            var ctx = document.getElementById('splits').getContext('2d');
+            var splitChart = new Chart(ctx).Bar({
+                labels: [],
+                datasets: [
+                    {
+                        label: "Times",
+                        fillColor: "rgba(120,120,220,0.5)",
+                        strokeColor: "rgba(220,220,220,0.8)",
+                        highlightFill: "rgba(220,220,220,0.75)",
+                        highlightStroke: "rgba(220,220,220,1)",
+                        data: []
+                    }
+                ]
+            }, {
+                barShowStroke: false,
+                scaleShowGridLines : false,
+                animationEasing: 'easeOutQuart'
+            });
 
-</ul>
-Total time: <span id="profile"></span>
 
+            document.querySelector('mandelbrot').onSplit = function(splitTime) {
+                splitChart.addData([splitTime], i);
+                i++;
+            };
+
+            document.querySelector('mandelbrot').onDone = function(profiler) {
+                document.getElementById('profile').innerHTML = profiler.print();
+            };
+
+            require(['../src/mandelbrot']);
+
+        });
+
+    </script>
 </body>
 
 
