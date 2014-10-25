@@ -5,7 +5,7 @@
 
 <body>
 
-<mandelbrot width="600" height="400" zoom="1.5"></mandelbrot>
+<mandelbrot width="600" height="400" zoom="2" scale="2"></mandelbrot>
 
 <script src="../node_modules/requirejs/require.js"></script>
 <script>
@@ -13,22 +13,5 @@
 </script>
 </body>
 <span id="profile"></span>
-
-<script>
-    window.updateMandelbrotSet = function() {
-        var x = document.getElementById('control-x').value;
-        var y = document.getElementById('control-y').value;
-        var zoom = document.getElementById('control-zoom').value;
-        document.querySelector('mandelbrot').setAttribute('x', x);
-        document.querySelector('mandelbrot').setAttribute('y', y);
-        document.querySelector('mandelbrot').setAttribute('zoom', zoom);
-    };
-</script>
-<br>
-<label for="control-x">X</label> <input id="control-x" placeholder="x"><br>
-<label for="control-y">Y</label> <input id="control-y" placeholder="y"><br>
-<label for="control-zoom">Zoom</label> <input id="control-zoom" placeholder="zoom">
-
-<button onclick='updateMandelbrotSet()'>Update</button>
 
 </html>

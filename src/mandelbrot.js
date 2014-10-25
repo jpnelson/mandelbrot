@@ -4,8 +4,8 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
     var step;
     var profileStartTime;
 
-    var MAX_STEP = 30;
-    var SCALE = 2;
+    var maxStep = 30;
+    var scale = 2;
 
     var x;
     var y;
@@ -14,7 +14,7 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
     function loop() {
         requestAnimationFrame(function () {
             iterateMandelbrotSet();
-            if (step < MAX_STEP) {
+            if (step < maxStep) {
                 loop();
                 step++;
             } else {
@@ -27,14 +27,16 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
         canvas = element.querySelector('canvas');
         canvas.width = element.getAttribute('width');
         canvas.height = element.getAttribute('height');
+        maxStep = element.getAttribute('steps') || maxStep;
+        scale = element.getAttribute('scale') || scale;
 
         graphics = canvas.getContext('2d');
 
         profile_start();
 
         step = 0;
-        graphics.scale(SCALE, SCALE);
-        fractal.init(canvas.width / SCALE, canvas.height / SCALE, {
+        graphics.scale(scale, scale);
+        fractal.init(canvas.width / scale, canvas.height / scale, {
             x: element.getAttribute('x') || 0,
             y: element.getAttribute('y') || 0,
             zoom: element.getAttribute('zoom') || 1
@@ -61,7 +63,7 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
     }
 
     function drawSquare(x, y, color) {
-        graphics.fillStyle = "rgba(0,0,0,"+(1 / MAX_STEP)+")";
+        graphics.fillStyle = "rgba(0,0,0,"+(1 / maxStep)+")";
         graphics.fillRect(x, y, 1, 1);
     }
 
@@ -79,21 +81,6 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
                 }
             },
             height: {
-                updated: function (element) {
-                    init(element);
-                }
-            },
-            x: {
-                updated: function (element) {
-                    init(element);
-                }
-            },
-            y: {
-                updated: function (element) {
-                    init(element);
-                }
-            },
-            zoom: {
                 updated: function (element) {
                     init(element);
                 }
