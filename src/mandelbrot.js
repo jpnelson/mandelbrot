@@ -1,8 +1,8 @@
-define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (skate, fractal, spectrum) {
+define(['../bower_components/skatejs/dist/skate.js', './fractal', './profiler'], function (skate, fractal, Profiler) {
     var canvas;
     var graphics;
     var step;
-    var profileStartTime;
+    var mandelbrotProfiler = new Profiler();
 
     var maxStep = 30;
     var scale = 2;
@@ -10,6 +10,9 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
     var x;
     var y;
     var zoom;
+
+    var onDoneCallback = function () {};
+    var onSplitCallback = function () {};
 
     function loop() {
         requestAnimationFrame(function () {
@@ -32,6 +35,9 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
 
         graphics = canvas.getContext('2d');
 
+        onDoneCallback = element.onDone || onDoneCallback;
+        onSplitCallback = element.onSplit || onSplitCallback;
+
         profile_start();
 
         step = 0;
@@ -46,11 +52,14 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
     }
 
     function profile_start() {
-        profileStartTime = Date.now()
+        mandelbrotProfiler.start();
+        mandelbrotProfiler.onSplit(onSplitCallback);
     }
 
     function profile_stop() {
-        document.getElementById('profile').innerHTML = (Date.now() - profileStartTime) / 1000 + ' seconds';
+        mandelbrotProfiler.stop();
+
+        onDoneCallback(mandelbrotProfiler)
     }
 
     function iterateMandelbrotSet() {
@@ -60,6 +69,7 @@ define(['../bower_components/skatejs/dist/skate.js', './fractal'], function (ska
                 drawSquare(x, y);
             }
         });
+        mandelbrotProfiler.split();
     }
 
     function drawSquare(x, y, color) {

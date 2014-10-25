@@ -9,9 +9,24 @@
 
 <script src="../node_modules/requirejs/require.js"></script>
 <script>
+    document.querySelector('mandelbrot').onSplit = function(splitTime) {
+        var li = document.createElement('li');
+        li.innerHTML = splitTime;
+        document.getElementById('splits').appendChild(li);
+    };
+
+    document.querySelector('mandelbrot').onDone = function(profiler) {
+        document.getElementById('profile').innerHTML = profiler.print();
+    };
     require(['../src/mandelbrot']);
 </script>
+
+<ul id="splits">
+
+</ul>
+Total time: <span id="profile"></span>
+
 </body>
-<span id="profile"></span>
+
 
 </html>
